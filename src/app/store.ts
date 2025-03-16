@@ -5,6 +5,7 @@ import storage from 'redux-persist/lib/storage';
 import tasksReducer from '../features/tasks/tasksSlice';
 import uiReducer from '../features/ui/uiSlice';
 import historyReducer from '../features/history/historySlice';
+import { historyMiddleware } from './historyMiddleware';
 
 
 // Configuration for redux-persist
@@ -27,7 +28,7 @@ export const store = configureStore({
         // Ignore these action types for serializability check
         ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
       },
-    }),
+    }).concat(historyMiddleware),
 });
 
 // Create the persistor for the store

@@ -5,6 +5,7 @@ import { useAppSelector } from './app/hooks';
 import Header from './components/layout/Header';
 import ListView from './components/views/ListView';
 import KanbanView from './components/views/KanbanView';
+import TaskModal from './components/modals/TaskModal';
 
 function App() {
   const viewMode = useAppSelector(state => state.ui.viewMode);
@@ -19,7 +20,7 @@ function App() {
         </div>
       </main>
       
-      {/* Future place for TaskModal component */}
+      <TaskModal />
     </div>
   );
 }

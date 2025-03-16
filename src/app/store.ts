@@ -4,6 +4,8 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import tasksReducer from '../features/tasks/tasksSlice';
 import uiReducer from '../features/ui/uiSlice';
+import historyReducer from '../features/history/historySlice';
+
 
 // Configuration for redux-persist
 const tasksPersistConfig = {
@@ -17,6 +19,7 @@ export const store = configureStore({
   reducer: {
     tasks: persistReducer(tasksPersistConfig, tasksReducer),
     ui: uiReducer, // UI state doesn't need to be persisted
+    history: historyReducer, // History doesn't need to be persisted
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

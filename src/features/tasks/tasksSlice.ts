@@ -66,6 +66,10 @@ export const tasksSlice = createSlice({
           updatedAt: new Date().toISOString()
         };
       }
+    },
+    // Replace all tasks (used for undo/redo)
+    setTasks: (state, action: PayloadAction<Task[]>) => {
+      state.items = action.payload;
     }
   }
 });
@@ -76,7 +80,8 @@ export const {
   updateTask, 
   deleteTask, 
   deleteTasks,
-  updateTaskPriority
+  updateTaskPriority,
+  setTasks
 } = tasksSlice.actions;
 
 // Export the reducer

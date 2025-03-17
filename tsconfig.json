@@ -16,5 +16,7 @@
     "jsx": "react-jsx",
     "types": ["vitest/globals"]
   },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "vite.config.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

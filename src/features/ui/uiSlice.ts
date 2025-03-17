@@ -1,4 +1,4 @@
-//src/features/us/usSlice.ts
+//src/features/ui/uiSlice.ts
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { 

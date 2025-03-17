@@ -152,7 +152,3 @@ src/
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Acknowledgments
-
-* Inspired by Notion's database functionality
-* Built using the latest React and Redux best practices

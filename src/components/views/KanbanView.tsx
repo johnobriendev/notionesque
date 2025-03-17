@@ -149,7 +149,7 @@ const KanbanView: React.FC = () => {
   );
   
   return (
-    <div className="h-full">
+    <div className="h-full flex justify-center align-center">
       {/* <h2 className="text-xl font-semibold mb-4">Kanban Board</h2> */}
       
       <DragDropContext onDragEnd={handleDragEnd}>

@@ -15,7 +15,7 @@ function App() {
       <Header />
       
       <main>
-        <div className="max-w-full mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-center align-center">
+        <div className="max-w-full mx-auto py-4 px-4 sm:px-6 lg:px-8 ">
           {viewMode === 'list' ? <ListView /> : <KanbanView />}
         </div>
       </main>

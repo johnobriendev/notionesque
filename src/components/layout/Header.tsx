@@ -10,6 +10,8 @@ import {
   setFilterPriority
 } from '../../features/ui/uiSlice';
 import { ViewMode, TaskStatus, TaskPriority } from '../../types';
+import HistoryControls from '../common/HistoryControls';
+
 
 const Header: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -45,10 +47,15 @@ const Header: React.FC = () => {
     <header className="bg-white shadow">
       <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
         <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Notionesque
-          </h1>
-          
+         
+          <div className="flex items-center">
+            <h1 className="text-3xl font-bold text-gray-900 mr-4">
+              Notionesque
+            </h1>
+            {/* Undo/Redo Controls */}
+            <HistoryControls />
+          </div>
+
           <div className="flex space-x-4">
             <button
               onClick={handleCreateTask}

@@ -4,15 +4,15 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import tasksReducer from '../features/tasks/tasksSlice';
 import uiReducer from '../features/ui/uiSlice';
-import historyReducer from '../features/history/historySlice';
-import { historyMiddleware } from './historyMiddleware';
 
 
-// Configuration for redux-persist
+
+
+// Configuration for redux-persist with redux-undo
 const tasksPersistConfig = {
   key: 'tasks',
   storage,
-  whitelist: ['items'] // Only persist the items array
+  whitelist: ['present'] // Only persist the present state for tasks with redux-undo
 };
 
 // Create the store with our reducers
@@ -20,7 +20,6 @@ export const store = configureStore({
   reducer: {
     tasks: persistReducer(tasksPersistConfig, tasksReducer),
     ui: uiReducer, // UI state doesn't need to be persisted
-    history: historyReducer, // History doesn't need to be persisted
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -28,7 +27,7 @@ export const store = configureStore({
         // Ignore these action types for serializability check
         ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
       },
-    }).concat(historyMiddleware),
+    }),
 });
 
 // Create the persistor for the store

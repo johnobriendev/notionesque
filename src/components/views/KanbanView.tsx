@@ -3,12 +3,13 @@
 import React from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { openTaskModal } from '../../features/ui/uiSlice';
 import { updateTaskPriority, deleteTask } from '../../features/tasks/tasksSlice';
 import { TaskPriority, TaskStatus, Task } from '../../types';
 
 const KanbanView: React.FC = () => {
   const dispatch = useAppDispatch();
-  const tasks = useAppSelector(state => state.tasks.items);
+  const tasks = useAppSelector(state => state.tasks.present.items);
   const filterConfig = useAppSelector(state => state.ui.filterConfig);
   
   // Filter tasks based on current configuration (not by priority since that's our column layout)

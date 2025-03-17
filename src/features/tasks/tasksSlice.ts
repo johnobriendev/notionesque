@@ -1,5 +1,6 @@
 //src/features/tasks/tasksSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import undoable, { includeAction } from 'redux-undo';
 import { v4 as uuidv4 } from 'uuid';
 import { Task, TaskStatus, TaskPriority } from '../../types';
 
@@ -67,11 +68,23 @@ export const tasksSlice = createSlice({
         };
       }
     },
-    // Replace all tasks (used for undo/redo)
-    setTasks: (state, action: PayloadAction<Task[]>) => {
-      state.items = action.payload;
-    }
   }
+});
+
+// Actions to be included in undo history
+const undoableActions = [
+  'tasks/addTask',
+  'tasks/updateTask',
+  'tasks/deleteTask',
+  'tasks/deleteTasks',
+  'tasks/updateTaskPriority',
+];
+
+// Wrap the reducer with undoable
+const undoableTasksReducer = undoable(tasksSlice.reducer, {
+  filter: includeAction(undoableActions),
+  limit: 20, // Limit the history to 20 steps
+  debug: true // Enable debug output
 });
 
 // Export the actions
@@ -81,11 +94,10 @@ export const {
   deleteTask, 
   deleteTasks,
   updateTaskPriority,
-  setTasks
 } = tasksSlice.actions;
 
 // Export the reducer
-export default tasksSlice.reducer;
+export default undoableTasksReducer;
 
 // Selector to get all tasks
-export const selectAllTasks = (state: { tasks: TasksState }) => state.tasks.items;
+export const selectAllTasks = (state: any) => state.tasks.present.items;

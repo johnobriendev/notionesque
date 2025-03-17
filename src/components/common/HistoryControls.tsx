@@ -1,45 +1,35 @@
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { undo, redo, selectCanUndo, selectCanRedo } from '../../features/history/historySlice';
-import { setTasks } from '../../features/tasks/tasksSlice';
+import { ActionCreators } from 'redux-undo';
 
 const HistoryControls: React.FC = () => {
   const dispatch = useAppDispatch();
-  const canUndo = useAppSelector(selectCanUndo);
-  const canRedo = useAppSelector(selectCanRedo);
-  const pastState = useAppSelector(state => state.history.past.length > 0 ? 
-    state.history.past[state.history.past.length - 1] : null);
-  const futureState = useAppSelector(state => state.history.future.length > 0 ? 
-    state.history.future[state.history.future.length - 1] : null);
-
+  
+  // Access the undo/redo state directly from redux-undo
+  const canUndo = useAppSelector(state => state.tasks.past.length > 0);
+  const canRedo = useAppSelector(state => state.tasks.future.length > 0);
+  
+  // Get counts for debugging and tooltips
+  const pastCount = useAppSelector(state => state.tasks.past.length);
+  const futureCount = useAppSelector(state => state.tasks.future.length);
+  
   // Handle undo action
   const handleUndo = () => {
-    if (!canUndo) return;
-    
-    if (pastState) {
-      // Apply the past state to the tasks
-      dispatch(setTasks(pastState));
+    if (canUndo) {
+      dispatch(ActionCreators.undo());
     }
-    
-    // Record the undo in history
-    dispatch(undo());
   };
 
   // Handle redo action
   const handleRedo = () => {
-    if (!canRedo) return;
-    
-    if (futureState) {
-      // Apply the future state to the tasks
-      dispatch(setTasks(futureState));
+    if (canRedo) {
+      dispatch(ActionCreators.redo());
     }
-    
-    // Record the redo in history
-    dispatch(redo());
   };
 
   return (
     <div className="flex items-center space-x-2">
+      {/* Undo Button with Curved Arrow Icon */}
       <button
         onClick={handleUndo}
         disabled={!canUndo}
@@ -48,12 +38,15 @@ const HistoryControls: React.FC = () => {
           ? 'bg-gray-100 hover:bg-gray-200 text-gray-700' 
           : 'bg-gray-50 text-gray-400 cursor-not-allowed'
         }`}
-        title="Undo"
+        title={`Undo (${pastCount} states in history)`}
+        data-testid="undo-button"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 10h10a8 8 0 0 1 8 8v2M3 10l6 6M3 10l6-6"/>
         </svg>
       </button>
+      
+      {/* Redo Button with Curved Arrow Icon */}
       <button
         onClick={handleRedo}
         disabled={!canRedo}
@@ -62,10 +55,11 @@ const HistoryControls: React.FC = () => {
           ? 'bg-gray-100 hover:bg-gray-200 text-gray-700' 
           : 'bg-gray-50 text-gray-400 cursor-not-allowed'
         }`}
-        title="Redo"
+        title={`Redo (${futureCount} states in future)`}
+        data-testid="redo-button"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 10H11a8 8 0 0 0-8 8v2M21 10l-6 6M21 10l-6-6"/>
         </svg>
       </button>
     </div>

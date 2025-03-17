@@ -9,7 +9,7 @@ const TaskModal: React.FC = () => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector(state => state.ui.isTaskModalOpen);
   const editingTaskId = useAppSelector(state => state.ui.editingTaskId);
-  const tasks = useAppSelector(state => state.tasks.items);
+  const tasks = useAppSelector(state => state.tasks.present.items);
   
   // Find the task being edited, if any
   const taskToEdit = editingTaskId 

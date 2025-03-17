@@ -7,7 +7,7 @@ import { Task, SortField, SortDirection, TaskStatus, TaskPriority } from '../../
 
 const ListView: React.FC = () => {
   const dispatch = useAppDispatch();
-  const tasks = useAppSelector(state => state.tasks.items);
+  const tasks = useAppSelector(state => state.tasks.present.items);
   const filterConfig = useAppSelector(state => state.ui.filterConfig);
   const sortConfig = useAppSelector(state => state.ui.sortConfig);
 

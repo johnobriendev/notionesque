@@ -24,6 +24,7 @@ const TaskModal: React.FC = () => {
   const [customFields, setCustomFields] = useState<Record<string, string>>({});
   
   // For adding custom fields
+  const [showCustomFields, setShowCustomFields] = useState(false);
   const [newFieldName, setNewFieldName] = useState('');
   const [newFieldValue, setNewFieldValue] = useState('');
   
@@ -37,6 +38,7 @@ const TaskModal: React.FC = () => {
         setStatus(taskToEdit.status);
         setPriority(taskToEdit.priority);
         setCustomFields(taskToEdit.customFields as Record<string, string>);
+        setShowCustomFields(Object.keys(taskToEdit.customFields).length > 0);
       } else {
         // Creating new task - reset form
         setTitle('');
@@ -44,6 +46,7 @@ const TaskModal: React.FC = () => {
         setStatus('not started');
         setPriority('none');
         setCustomFields({});
+        setShowCustomFields(false);
       }
     }
   }, [isOpen, taskToEdit]);
@@ -106,13 +109,18 @@ const TaskModal: React.FC = () => {
       return updated;
     });
   };
+
+  // Toggle custom fields visibility
+  const toggleCustomFields = () => {
+    setShowCustomFields(!showCustomFields);
+  };
   
   // If modal is closed, don't render anything
   if (!isOpen) return null;
   
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">
           {taskToEdit ? 'Edit Task' : 'Create New Task'}
         </h2>
@@ -180,56 +188,89 @@ const TaskModal: React.FC = () => {
             </div>
           </div>
           
-          {/* Custom Fields */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Custom Fields
-            </label>
+          {/* Custom Fields Collapsible Section */}
+          <div className="mb-4 border rounded-md overflow-hidden">
+            <button
+              type="button"
+              onClick={toggleCustomFields}
+              className="w-full px-4 py-2 bg-gray-50 text-left flex justify-between items-center focus:outline-none"
+            >
+              <span className="font-medium text-gray-700">
+                Custom Fields {Object.keys(customFields).length > 0 && `(${Object.keys(customFields).length})`}
+              </span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={`h-5 w-5 transition-transform ${showCustomFields ? 'transform rotate-180' : ''}`}
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
             
-            {/* List existing custom fields */}
-            {Object.entries(customFields).length > 0 && (
-              <div className="mb-3 border rounded-md p-2 bg-gray-50">
-                {Object.entries(customFields).map(([name, value]) => (
-                  <div key={name} className="flex items-center justify-between py-1">
-                    <div>
-                      <span className="font-medium">{name}:</span> {value}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveCustomField(name)}
-                      className="text-red-600 hover:text-red-800 text-sm"
-                    >
-                      Remove
-                    </button>
+            {/* Collapsible content */}
+            {showCustomFields && (
+              <div className="p-4 border-t">
+                {/* List existing custom fields */}
+                {Object.entries(customFields).length > 0 && (
+                  <div className="mb-4 bg-gray-50 rounded-md p-3">
+                    {Object.entries(customFields).map(([name, value]) => (
+                      <div key={name} className="flex items-center justify-between py-2 border-b last:border-b-0">
+                        <div className="flex flex-col mr-2 overflow-hidden">
+                          <span className="font-medium text-sm text-gray-800">{name}</span>
+                          <span className="text-gray-600 truncate">{value}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveCustomField(name)}
+                          className="text-red-600 hover:text-red-800 text-sm px-2 py-1 flex-shrink-0"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
+                
+                {/* Add new custom field - using vertical layout for more space */}
+                <div className="mt-3">
+                  <div className="flex flex-col space-y-2">
+                    <div className="w-full">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Field Name</label>
+                      <input
+                        type="text"
+                        placeholder="e.g., Due Date, Assigned To, URL"
+                        value={newFieldName}
+                        onChange={(e) => setNewFieldName(e.target.value)}
+                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="w-full">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Field Value</label>
+                      <input
+                        type="text"
+                        placeholder="e.g., 2023-12-31, John Doe, https://example.com"
+                        value={newFieldValue}
+                        onChange={(e) => setNewFieldValue(e.target.value)}
+                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAddCustomField}
+                    disabled={!newFieldName.trim() || !newFieldValue.trim()}
+                    className={`mt-3 w-full px-4 py-2 rounded-md transition-colors ${
+                      !newFieldName.trim() || !newFieldValue.trim()
+                        ? 'bg-blue-300 cursor-not-allowed'
+                        : 'bg-blue-600 hover:bg-blue-700 text-white'
+                    }`}
+                  >
+                    Add Field
+                  </button>
+                </div>
               </div>
             )}
-            
-            {/* Add new custom field */}
-            <div className="flex">
-              <input
-                type="text"
-                placeholder="Field name"
-                value={newFieldName}
-                onChange={(e) => setNewFieldName(e.target.value)}
-                className="flex-1 px-3 py-2 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <input
-                type="text"
-                placeholder="Field value"
-                value={newFieldValue}
-                onChange={(e) => setNewFieldValue(e.target.value)}
-                className="flex-1 px-3 py-2 border-t border-b border-r focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                type="button"
-                onClick={handleAddCustomField}
-                className="px-4 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 transition-colors"
-              >
-                Add
-              </button>
-            </div>
           </div>
           
           {/* Form Actions */}

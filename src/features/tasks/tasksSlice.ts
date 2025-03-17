@@ -84,7 +84,9 @@ const undoableActions = [
 const undoableTasksReducer = undoable(tasksSlice.reducer, {
   filter: includeAction(undoableActions),
   limit: 20, // Limit the history to 20 steps
-  debug: true // Enable debug output
+  debug: true, // Enable debug output
+  syncFilter: true, // Prevent rehydration from creating a history entry
+  clearHistoryType: '@@redux-undo/CLEAR_HISTORY' // Action type to clear history
 });
 
 // Export the actions

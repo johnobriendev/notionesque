@@ -7,8 +7,8 @@ export const clearHistoryMiddleware: Middleware = store => next => action => {
   // Execute the action first
   const result = next(action);
   
-  // If this is the REHYDRATE action from redux-persist
-  if (action.type === 'persist/REHYDRATE') {
+  // Check if the action has a type property and if it's the REHYDRATE action
+  if (typeof action === 'object' && action !== null && 'type' in action && action.type === 'persist/REHYDRATE') {
     // Clear the history after a short delay to ensure rehydration is complete
     setTimeout(() => {
       store.dispatch(ActionCreators.clearHistory());

@@ -18,7 +18,7 @@ const tasksPersistConfig = {
 // Create the store with our reducers
 export const store = configureStore({
   reducer: {
-    tasks: persistReducer(tasksPersistConfig, tasksReducer),
+    tasks: persistReducer(tasksPersistConfig, tasksReducer) as any,
     ui: uiReducer, // UI state doesn't need to be persisted
   },
   middleware: (getDefaultMiddleware) =>

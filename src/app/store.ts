@@ -5,6 +5,7 @@ import storage from 'redux-persist/lib/storage';
 import tasksReducer from '../features/tasks/tasksSlice';
 import uiReducer from '../features/ui/uiSlice';
 import { clearHistoryMiddleware } from './clearHistoryMiddleware';
+import { RootState } from '../types';
 
 
 
@@ -34,5 +35,5 @@ export const store = configureStore({
 export const persistor = persistStore(store);
 
 // Export types for TypeScript
-export type RootState = ReturnType<typeof store.getState>;
+export type AppStore = typeof store;
 export type AppDispatch = typeof store.dispatch;

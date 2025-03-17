@@ -9,7 +9,7 @@ import { TaskPriority, TaskStatus, Task } from '../../types';
 
 const KanbanView: React.FC = () => {
   const dispatch = useAppDispatch();
-  const tasks = useAppSelector(state => state.tasks.present.items);
+  const tasks = useAppSelector(state => state.tasks.present.items as Task[]);
   const filterConfig = useAppSelector(state => state.ui.filterConfig);
   
   // Filter tasks based on current configuration (not by priority since that's our column layout)

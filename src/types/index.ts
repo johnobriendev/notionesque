@@ -31,3 +31,32 @@ export interface FilterConfig {
     priority: TaskPriority | 'all';
     searchTerm: string;
 }
+
+// Structure for task state with redux-undo
+export interface TasksState {
+    items: Task[];
+  }
+  
+  // Structure for the history state (from redux-undo)
+  export interface StateWithHistory<T> {
+    past: T[];
+    present: T;
+    future: T[];
+  }
+  
+  // UI state structure
+  export interface UiState {
+    viewMode: ViewMode;
+    sortConfig: SortConfig;
+    filterConfig: FilterConfig;
+    isTaskModalOpen: boolean;
+    editingTaskId: string | null;
+    isTaskDetailOpen: boolean;
+    viewingTaskId: string | null;
+  }
+  
+  // Complete app state structure
+  export interface RootState {
+    tasks: StateWithHistory<TasksState>;
+    ui: UiState;
+  }

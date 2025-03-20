@@ -3,7 +3,7 @@
 import React from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { openTaskModal, openTaskDetail } from '../../features/ui/uiSlice';
+import { openTaskModal, openTaskDetail, openDeleteConfirm } from '../../features/ui/uiSlice';
 import { updateTaskPriority, deleteTask } from '../../features/tasks/tasksSlice';
 import { TaskPriority, TaskStatus, Task } from '../../types';
 
@@ -95,9 +95,7 @@ const KanbanView: React.FC = () => {
   
   // Handle delete task
   const handleDeleteTask = (taskId: string) => {
-    if (window.confirm('Are you sure you want to delete this task?')) {
-      dispatch(deleteTask(taskId));
-    }
+    dispatch(openDeleteConfirm(taskId));
   };
   
   // Task card component

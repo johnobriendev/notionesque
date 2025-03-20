@@ -6,6 +6,7 @@ import Header from './components/layout/Header';
 import ListView from './components/views/ListView';
 import KanbanView from './components/views/KanbanView';
 import TaskModal from './components/modals/TaskModal';
+import DeleteConfirmModal from './components/modals/DeleteConfirmModal';
 import TaskDetailView from './components/task/TaskDetailVIew';
 import { closeTaskDetail } from './features/ui/uiSlice';
 
@@ -41,6 +42,8 @@ function App() {
           onClose={() => dispatch(closeTaskDetail())} 
         />
       )}
+
+      <DeleteConfirmModal />
     </div>
   );
 }

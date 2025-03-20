@@ -1,7 +1,7 @@
 //src/components/views/ListView.tsx
 import React, {useState, useEffect} from 'react';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { openTaskModal, setSortConfig, openTaskDetail } from '../../features/ui/uiSlice';
+import { openTaskModal, setSortConfig, openTaskDetail, openDeleteConfirm } from '../../features/ui/uiSlice';
 import { deleteTask, deleteTasks } from '../../features/tasks/tasksSlice';
 import { Task, SortField, SortDirection, TaskStatus, TaskPriority } from '../../types';
 
@@ -102,15 +102,7 @@ const ListView: React.FC = () => {
   
   // Handle delete task
   const handleDeleteTask = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this task?')) {
-      dispatch(deleteTask(id));
-      // Remove from selection if it was selected
-      if (selectedTaskIds.has(id)) {
-        const newSelection = new Set(selectedTaskIds);
-        newSelection.delete(id);
-        setSelectedTaskIds(newSelection);
-      }
-    }
+    dispatch(openDeleteConfirm(id));
   };
   
   // Handle bulk delete

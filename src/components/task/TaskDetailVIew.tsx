@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAppDispatch } from '../../app/hooks';
-import { openTaskModal } from '../../features/ui/uiSlice';
+import { openDeleteConfirm, openTaskModal } from '../../features/ui/uiSlice';
 import { deleteTask } from '../../features/tasks/tasksSlice';
 import { Task, TaskStatus, TaskPriority } from '../../types';
 
@@ -25,10 +25,7 @@ const TaskDetailView: React.FC<TaskDetailViewProps> = ({ task, onClose }) => {
   
   // Handle delete task
   const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this task?')) {
-      dispatch(deleteTask(task.id));
-      onClose(); // Close the detail view
-    }
+    dispatch(openDeleteConfirm(task.id))
   };
   
   // Get status badge class

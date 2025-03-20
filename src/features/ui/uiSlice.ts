@@ -20,6 +20,8 @@ interface UiState {
   editingTaskId: string | null;
   isTaskDetailOpen: boolean;
   viewingTaskId: string | null;
+  isDeleteConfirmOpen: boolean;
+  deletingTaskId: string | null;
   
 }
 
@@ -39,6 +41,8 @@ const initialState: UiState = {
   editingTaskId: null,
   isTaskDetailOpen: false,
   viewingTaskId: null,
+  isDeleteConfirmOpen: false,
+  deletingTaskId: null
 };
 
 // Create the slice with reducers
@@ -105,7 +109,18 @@ export const uiSlice = createSlice({
     closeTaskDetail: (state) => {
       state.isTaskDetailOpen = false;
       state.viewingTaskId = null;
-    }
+    },
+
+    openDeleteConfirm: (state, action: PayloadAction<string>) => {
+      state.isDeleteConfirmOpen = true;
+      state.deletingTaskId = action.payload;
+    },
+    
+    // Close delete confirmation modal
+    closeDeleteConfirm: (state) => {
+      state.isDeleteConfirmOpen = false;
+      state.deletingTaskId = null;
+    },
 
   }
 });
@@ -120,7 +135,9 @@ export const {
   openTaskModal,
   closeTaskModal,
   openTaskDetail,
-  closeTaskDetail
+  closeTaskDetail,
+  openDeleteConfirm,
+  closeDeleteConfirm
 } = uiSlice.actions;
 
 // Export the reducer
@@ -134,3 +151,5 @@ export const selectIsTaskModalOpen = (state: { ui: UiState }) => state.ui.isTask
 export const selectEditingTaskId = (state: { ui: UiState }) => state.ui.editingTaskId;
 export const selectIsTaskDetailOpen = (state: { ui: UiState }) => state.ui.isTaskDetailOpen;
 export const selectViewingTaskId = (state: { ui: UiState }) => state.ui.viewingTaskId;
+export const selectIsDeleteConfirmOpen = (state: { ui: UiState }) => state.ui.isDeleteConfirmOpen;
+export const selectDeletingTaskId = (state: { ui: UiState }) => state.ui.deletingTaskId;

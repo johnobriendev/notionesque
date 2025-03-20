@@ -18,6 +18,9 @@ interface UiState {
   filterConfig: FilterConfig;
   isTaskModalOpen: boolean;
   editingTaskId: string | null;
+  isTaskDetailOpen: boolean;
+  viewingTaskId: string | null;
+  
 }
 
 // Initial state when the application loads
@@ -33,7 +36,9 @@ const initialState: UiState = {
     searchTerm: '',
   },
   isTaskModalOpen: false,
-  editingTaskId: null
+  editingTaskId: null,
+  isTaskDetailOpen: false,
+  viewingTaskId: null,
 };
 
 // Create the slice with reducers
@@ -85,7 +90,23 @@ export const uiSlice = createSlice({
     closeTaskModal: (state) => {
       state.isTaskModalOpen = false;
       state.editingTaskId = null;
+    },
+
+    // Open task detail view
+    openTaskDetail: (state, action: PayloadAction<string>) => {
+      state.isTaskDetailOpen = true;
+      state.viewingTaskId = action.payload;
+      // Close modal if open
+      state.isTaskModalOpen = false;
+      state.editingTaskId = null;
+    },
+    
+    // Close task detail view
+    closeTaskDetail: (state) => {
+      state.isTaskDetailOpen = false;
+      state.viewingTaskId = null;
     }
+
   }
 });
 
@@ -97,7 +118,9 @@ export const {
   setFilterPriority, 
   setSearchTerm,
   openTaskModal,
-  closeTaskModal
+  closeTaskModal,
+  openTaskDetail,
+  closeTaskDetail
 } = uiSlice.actions;
 
 // Export the reducer
@@ -109,3 +132,5 @@ export const selectSortConfig = (state: { ui: UiState }) => state.ui.sortConfig;
 export const selectFilterConfig = (state: { ui: UiState }) => state.ui.filterConfig;
 export const selectIsTaskModalOpen = (state: { ui: UiState }) => state.ui.isTaskModalOpen;
 export const selectEditingTaskId = (state: { ui: UiState }) => state.ui.editingTaskId;
+export const selectIsTaskDetailOpen = (state: { ui: UiState }) => state.ui.isTaskDetailOpen;
+export const selectViewingTaskId = (state: { ui: UiState }) => state.ui.viewingTaskId;

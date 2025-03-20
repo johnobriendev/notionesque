@@ -3,7 +3,7 @@
 import React from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { openTaskModal } from '../../features/ui/uiSlice';
+import { openTaskModal, openTaskDetail } from '../../features/ui/uiSlice';
 import { updateTaskPriority, deleteTask } from '../../features/tasks/tasksSlice';
 import { TaskPriority, TaskStatus, Task } from '../../types';
 
@@ -104,7 +104,12 @@ const KanbanView: React.FC = () => {
   const TaskCard = ({ task }: { task: Task }) => (
     <div className="bg-white rounded shadow p-3 border border-gray-200 hover:shadow-md transition-shadow">
       <div className="flex justify-between items-start">
-        <h4 className="font-medium text-gray-900">{task.title}</h4>
+        <h4 
+        className="font-medium text-gray-900 cursor-pointer hover:text-blue-600"
+        onClick={() => dispatch(openTaskDetail(task.id))}
+        >
+          {task.title}
+        </h4>
       </div>
       
       {task.description && (

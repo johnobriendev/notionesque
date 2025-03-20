@@ -1,14 +1,26 @@
 //src/app.tsx
 
 import React from 'react';
-import { useAppSelector } from './app/hooks';
+import { useAppSelector, useAppDispatch } from './app/hooks';
 import Header from './components/layout/Header';
 import ListView from './components/views/ListView';
 import KanbanView from './components/views/KanbanView';
 import TaskModal from './components/modals/TaskModal';
+import TaskDetailView from './components/task/TaskDetailVIew';
+import { closeTaskDetail } from './features/ui/uiSlice';
 
 function App() {
+  const dispatch = useAppDispatch();
   const viewMode = useAppSelector(state => state.ui.viewMode);
+  const isTaskDetailOpen = useAppSelector(state => state.ui.isTaskDetailOpen);
+  const viewingTaskId = useAppSelector(state => state.ui.viewingTaskId);
+  const tasks = useAppSelector(state => state.tasks.present.items);
+
+  // Find the task being viewed, if any
+  const taskBeingViewed = viewingTaskId 
+    ? tasks.find(task => task.id === viewingTaskId) 
+    : null;
+
   
   return (
     <div className="min-h-screen bg-gray-100 ">
@@ -21,6 +33,14 @@ function App() {
       </main>
       
       <TaskModal />
+
+      {/* Task Detail View - only rendered when isTaskDetailOpen is true */}
+      {isTaskDetailOpen && taskBeingViewed && (
+        <TaskDetailView 
+          task={taskBeingViewed} 
+          onClose={() => dispatch(closeTaskDetail())} 
+        />
+      )}
     </div>
   );
 }

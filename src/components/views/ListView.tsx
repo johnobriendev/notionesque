@@ -1,7 +1,7 @@
 //src/components/views/ListView.tsx
 import React, {useState, useEffect} from 'react';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { openTaskModal, setSortConfig } from '../../features/ui/uiSlice';
+import { openTaskModal, setSortConfig, openTaskDetail } from '../../features/ui/uiSlice';
 import { deleteTask, deleteTasks } from '../../features/tasks/tasksSlice';
 import { Task, SortField, SortDirection, TaskStatus, TaskPriority } from '../../types';
 
@@ -257,7 +257,12 @@ const ListView: React.FC = () => {
                   />
                 </td>
                 <td className="px-6 py-4">
-                  <div className="text-sm font-medium text-gray-900">{task.title}</div>
+                  <div 
+                  className="text-sm font-medium text-gray-900 cursor-pointer hover:text-blue-600"
+                  onClick={() => dispatch(openTaskDetail(task.id))}
+                  >
+                    {task.title}
+                  </div>
                   {task.description && (
                     <div className="text-sm text-gray-500 truncate max-w-xs">{task.description}</div>
                   )}

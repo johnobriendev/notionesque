@@ -68,6 +68,24 @@ export const tasksSlice = createSlice({
         };
       }
     },
+
+    bulkUpdateTasks: (state, action: PayloadAction<{ 
+      taskIds: string[]; 
+      updates: Partial<Pick<Task, 'status' | 'priority'>> 
+    }>) => {
+      const { taskIds, updates } = action.payload;
+      
+      state.items = state.items.map(task => {
+        if (taskIds.includes(task.id)) {
+          return {
+            ...task,
+            ...updates,
+            updatedAt: new Date().toISOString()
+          };
+        }
+        return task;
+      });
+    },
   }
 });
 
@@ -96,6 +114,7 @@ export const {
   deleteTask, 
   deleteTasks,
   updateTaskPriority,
+  bulkUpdateTasks
 } = tasksSlice.actions;
 
 // Export the reducer

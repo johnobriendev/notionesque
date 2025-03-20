@@ -22,6 +22,9 @@ interface UiState {
   viewingTaskId: string | null;
   isDeleteConfirmOpen: boolean;
   deletingTaskId: string | null;
+  isBulkEditOpen: boolean;
+  bulkEditType: 'status' | 'priority' | null;
+  selectedTaskIds: string[];
   
 }
 
@@ -42,7 +45,10 @@ const initialState: UiState = {
   isTaskDetailOpen: false,
   viewingTaskId: null,
   isDeleteConfirmOpen: false,
-  deletingTaskId: null
+  deletingTaskId: null,
+  isBulkEditOpen: false,
+  bulkEditType: null,
+  selectedTaskIds: []
 };
 
 // Create the slice with reducers
@@ -122,6 +128,23 @@ export const uiSlice = createSlice({
       state.deletingTaskId = null;
     },
 
+    // Open bulk edit modal
+    openBulkEdit: (state, action: PayloadAction<{
+      type: 'status' | 'priority',
+      taskIds: string[]
+    }>) => {
+      state.isBulkEditOpen = true;
+      state.bulkEditType = action.payload.type;
+      state.selectedTaskIds = action.payload.taskIds;
+    },
+    
+    // Close bulk edit modal
+    closeBulkEdit: (state) => {
+      state.isBulkEditOpen = false;
+      state.bulkEditType = null;
+      // Don't clear selectedTaskIds to maintain selection after edit
+    },
+
   }
 });
 
@@ -137,7 +160,9 @@ export const {
   openTaskDetail,
   closeTaskDetail,
   openDeleteConfirm,
-  closeDeleteConfirm
+  closeDeleteConfirm,
+  openBulkEdit,
+  closeBulkEdit
 } = uiSlice.actions;
 
 // Export the reducer
@@ -153,3 +178,6 @@ export const selectIsTaskDetailOpen = (state: { ui: UiState }) => state.ui.isTas
 export const selectViewingTaskId = (state: { ui: UiState }) => state.ui.viewingTaskId;
 export const selectIsDeleteConfirmOpen = (state: { ui: UiState }) => state.ui.isDeleteConfirmOpen;
 export const selectDeletingTaskId = (state: { ui: UiState }) => state.ui.deletingTaskId;
+export const selectIsBulkEditOpen = (state: { ui: UiState }) => state.ui.isBulkEditOpen;
+export const selectBulkEditType = (state: { ui: UiState }) => state.ui.bulkEditType;
+export const selectSelectedTaskIds = (state: { ui: UiState }) => state.ui.selectedTaskIds;

@@ -119,7 +119,15 @@ const TaskModal: React.FC = () => {
   if (!isOpen) return null;
   
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={(e) => {
+        // Only close if the click is on the backdrop, not on the modal itself
+        if (e.target === e.currentTarget) {
+          dispatch(closeTaskModal());
+        }
+      }}
+    >
       <div className="bg-white rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">
           {taskToEdit ? 'Edit Task' : 'Create New Task'}

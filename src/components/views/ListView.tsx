@@ -1,5 +1,5 @@
 //src/components/views/ListView.tsx
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { openTaskModal, setSortConfig } from '../../features/ui/uiSlice';
 import { deleteTask, deleteTasks } from '../../features/tasks/tasksSlice';
@@ -61,6 +61,11 @@ const ListView: React.FC = () => {
     
     return result;
   }, [tasks, filterConfig, sortConfig]);
+
+  useEffect(() => {
+    // Reset to page 1 when filters change
+    setCurrentPage(1);
+  }, [filterConfig]);
 
 
   // Get paginated tasks

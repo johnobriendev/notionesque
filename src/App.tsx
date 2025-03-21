@@ -1,6 +1,6 @@
 //src/app.tsx
 
-import React from 'react';
+import React, { useEffect} from 'react';
 import { useAppSelector, useAppDispatch } from './app/hooks';
 import Header from './components/layout/Header';
 import ListView from './components/views/ListView';
@@ -10,6 +10,8 @@ import BulkEditModal from './components/modals/BulkEditModal';
 import DeleteConfirmModal from './components/modals/DeleteConfirmModal';
 import TaskDetailView from './components/task/TaskDetailVIew';
 import { closeTaskDetail } from './features/ui/uiSlice';
+import { addTask } from './features/tasks/tasksSlice';
+import { getWelcomeTasks } from './utils/welcomeTasks';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -22,6 +24,18 @@ function App() {
   const taskBeingViewed = viewingTaskId 
     ? tasks.find(task => task.id === viewingTaskId) 
     : null;
+
+
+  // Add welcome tasks if no tasks exist
+  useEffect(() => {
+    if (tasks.length === 0) {
+      const welcomeTasks = getWelcomeTasks();
+      welcomeTasks.forEach(task => {
+        dispatch(addTask(task));
+      });
+      console.log('Welcome tasks added!');
+    }
+  }, [dispatch, tasks.length]);
 
   
   return (

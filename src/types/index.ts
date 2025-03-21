@@ -10,6 +10,7 @@ export interface Task {
     description: string;
     status: TaskStatus;
     priority: TaskPriority;
+    position: number;
     createdAt: string;
     updatedAt: string;
     customFields: Record<string,string | number | boolean>;

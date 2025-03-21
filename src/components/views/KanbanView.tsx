@@ -4,7 +4,7 @@ import React from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { openTaskModal, openTaskDetail, openDeleteConfirm } from '../../features/ui/uiSlice';
-import { updateTaskPriority, deleteTask } from '../../features/tasks/tasksSlice';
+import { updateTaskPriority, deleteTask, reorderTasks } from '../../features/tasks/tasksSlice';
 import { TaskPriority, TaskStatus, Task } from '../../types';
 
 const KanbanView: React.FC = () => {
@@ -28,12 +28,28 @@ const KanbanView: React.FC = () => {
       return true;
     });
   }, [tasks, filterConfig]);
-  
+
+
   // Group tasks by priority for Kanban columns
   const tasksByPriority = React.useMemo(() => {
     const priorityOrder: TaskPriority[] = ['none', 'low', 'medium', 'high', 'urgent'];
     const grouped = priorityOrder.reduce((acc, priority) => {
-      acc[priority] = filteredTasks.filter(task => task.priority === priority);
+      // Get all tasks for this priority and sort by position
+      const priorityTasks = filteredTasks
+        .filter(task => task.priority === priority)
+        .sort((a, b) => {
+          // If position is undefined, use a fallback sort by createdAt
+          if (a.position === undefined && b.position === undefined) {
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          }
+          // Handle cases where only one task has position
+          if (a.position === undefined) return 1;
+          if (b.position === undefined) return -1;
+          // Normal sort by position
+          return a.position - b.position;
+        });
+      
+      acc[priority] = priorityTasks;
       return acc;
     }, {} as Record<TaskPriority, typeof filteredTasks>);
     
@@ -54,14 +70,75 @@ const KanbanView: React.FC = () => {
     ) return;
     
     // Get the priority from the droppable ID (column ID)
-    const newPriority = destination.droppableId as TaskPriority;
+    const sourcePriority = source.droppableId as TaskPriority;
+    const destinationPriority = destination.droppableId as TaskPriority;
     
     // Get the task ID from the draggable ID
     const taskId = result.draggableId;
     
-    // Update the task priority
-    dispatch(updateTaskPriority({ id: taskId, priority: newPriority }));
+    // If moving between columns, update priority with destination index
+    if (sourcePriority !== destinationPriority) {
+      dispatch(updateTaskPriority({ 
+        id: taskId, 
+        priority: destinationPriority,
+        destinationIndex: destination.index // Pass the destination index
+      }));
+    } 
+    // If reordering within the same column
+    else {
+      const columnTasks = tasksByPriority[sourcePriority];
+      const reorderedTasks = Array.from(columnTasks);
+      
+      // Remove the task from its old position
+      const [movedTask] = reorderedTasks.splice(source.index, 1);
+      
+      // Insert the task at its new position
+      reorderedTasks.splice(destination.index, 0, movedTask);
+      
+      // Create an array of task IDs in their new order
+      const newOrder = reorderedTasks.map(task => task.id);
+      
+      // Dispatch an action to update the task order
+      dispatch(reorderTasks({ 
+        priority: sourcePriority, 
+        taskIds: newOrder
+      }));
+    }
   };
+  
+  // // Group tasks by priority for Kanban columns
+  // const tasksByPriority = React.useMemo(() => {
+  //   const priorityOrder: TaskPriority[] = ['none', 'low', 'medium', 'high', 'urgent'];
+  //   const grouped = priorityOrder.reduce((acc, priority) => {
+  //     acc[priority] = filteredTasks.filter(task => task.priority === priority);
+  //     return acc;
+  //   }, {} as Record<TaskPriority, typeof filteredTasks>);
+    
+  //   return grouped;
+  // }, [filteredTasks]);
+
+  // // Handle drag end event
+  // const handleDragEnd = (result: DropResult) => {
+  //   const { source, destination } = result;
+    
+  //   // Dropped outside a droppable area
+  //   if (!destination) return;
+    
+  //   // Dropped in the same position
+  //   if (
+  //     source.droppableId === destination.droppableId &&
+  //     source.index === destination.index
+  //   ) return;
+    
+  //   // Get the priority from the droppable ID (column ID)
+  //   const newPriority = destination.droppableId as TaskPriority;
+    
+  //   // Get the task ID from the draggable ID
+  //   const taskId = result.draggableId;
+    
+  //   // Update the task priority
+  //   dispatch(updateTaskPriority({ id: taskId, priority: newPriority }));
+  // };
   
   // Get priority color class
   const getPriorityColorClass = (priority: TaskPriority): string => {

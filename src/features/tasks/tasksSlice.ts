@@ -33,7 +33,7 @@ export const tasksSlice = createSlice({
   initialState,
   reducers: {
     // Add a new task
-    addTask: (state, action: PayloadAction<Omit<Task, 'id' | 'createdAt' | 'updatedAt'>>) => {
+    addTask: (state, action: PayloadAction<Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'position'>>) => {
       const now = new Date().toISOString();
       
       // Calculate the next position for the new task based on its priority

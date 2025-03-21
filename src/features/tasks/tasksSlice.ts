@@ -14,6 +14,11 @@ const initialState: TasksState = {
   items: []
 };
 
+interface ReorderTasksPayload {
+  priority: TaskPriority;
+  taskIds: string[];
+}
+
 // Create the slice with reducers
 export const tasksSlice = createSlice({
   name: 'tasks',
@@ -86,6 +91,22 @@ export const tasksSlice = createSlice({
         return task;
       });
     },
+
+    reorderTasks: (state, action: PayloadAction<ReorderTasksPayload>) => {
+      const { priority, taskIds } = action.payload;
+      
+      // Update positions based on the new order
+      taskIds.forEach((taskId, index) => {
+        const taskIndex = state.items.findIndex(task => task.id === taskId);
+        if (taskIndex !== -1) {
+          state.items[taskIndex] = {
+            ...state.items[taskIndex],
+            position: index,
+            updatedAt: new Date().toISOString()
+          };
+        }
+      });
+    },
   }
 });
 
@@ -96,6 +117,7 @@ const undoableActions = [
   'tasks/deleteTask',
   'tasks/deleteTasks',
   'tasks/updateTaskPriority',
+  'tasks/reorderTasks',
 ];
 
 // Wrap the reducer with undoable
@@ -114,6 +136,7 @@ export const {
   deleteTask, 
   deleteTasks,
   updateTaskPriority,
+  reorderTasks,
   bulkUpdateTasks
 } = tasksSlice.actions;
 

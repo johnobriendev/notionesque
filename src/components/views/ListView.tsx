@@ -1,7 +1,7 @@
 //src/components/views/ListView.tsx
 import React, {useState, useEffect} from 'react';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { openTaskModal, setSortConfig, openTaskDetail, openDeleteConfirm } from '../../features/ui/uiSlice';
+import { openTaskModal, setSortConfig, openTaskDetail, openDeleteConfirm, openBulkEdit, selectIsDeleteConfirmOpen } from '../../features/ui/uiSlice';
 import { deleteTask, deleteTasks } from '../../features/tasks/tasksSlice';
 import { Task, SortField, SortDirection, TaskStatus, TaskPriority } from '../../types';
 
@@ -10,6 +10,8 @@ const ListView: React.FC = () => {
   const tasks = useAppSelector(state => state.tasks.present.items as Task[]);
   const filterConfig = useAppSelector(state => state.ui.filterConfig);
   const sortConfig = useAppSelector(state => state.ui.sortConfig);
+  const isDeleteConfirmOpen = useAppSelector(selectIsDeleteConfirmOpen);
+
 
   // State for selected tasks (for bulk actions)
   const [selectedTaskIds, setSelectedTaskIds] = useState<Set<string>>(new Set());
@@ -17,6 +19,30 @@ const ListView: React.FC = () => {
    // State for pagination
    const [currentPage, setCurrentPage] = useState(1);
    const tasksPerPage = 10;
+
+
+   // Reset selections when tasks change (due to deletion, etc.)
+  useEffect(() => {
+    // Create a set of existing task IDs
+    const taskIdsSet = new Set(tasks.map(task => task.id));
+    
+    // Keep only the selections that still exist in tasks
+    const updatedSelections = new Set<string>();
+    selectedTaskIds.forEach(id => {
+      if (taskIdsSet.has(id)) {
+        updatedSelections.add(id);
+      }
+    });
+    
+    setSelectedTaskIds(updatedSelections);
+  }, [tasks]);
+
+  // Clear selected tasks when delete confirm modal closes
+  useEffect(() => {
+    if (!isDeleteConfirmOpen) {
+      // setSelectedTaskIds(new Set());
+    }
+  }, [isDeleteConfirmOpen]);
 
   
   // Filter and sort tasks based on current configuration
@@ -67,6 +93,8 @@ const ListView: React.FC = () => {
     setCurrentPage(1);
   }, [filterConfig]);
 
+  
+
 
   // Get paginated tasks
   const paginatedTasks = React.useMemo(() => {
@@ -108,11 +136,13 @@ const ListView: React.FC = () => {
   // Handle bulk delete
   const handleBulkDelete = () => {
     if (selectedTaskIds.size === 0) return;
+
+    dispatch(openDeleteConfirm(Array.from(selectedTaskIds)));
     
-    if (window.confirm(`Are you sure you want to delete ${selectedTaskIds.size} tasks?`)) {
-      dispatch(deleteTasks(Array.from(selectedTaskIds)));
-      setSelectedTaskIds(new Set());
-    }
+    // if (window.confirm(`Are you sure you want to delete ${selectedTaskIds.size} tasks?`)) {
+    //   dispatch(deleteTasks(Array.from(selectedTaskIds)));
+    //   setSelectedTaskIds(new Set());
+    // }
   };
   
   // Toggle task selection
@@ -186,12 +216,33 @@ const ListView: React.FC = () => {
           <span className="text-sm text-blue-700 font-medium">
             {selectedTaskIds.size} {selectedTaskIds.size === 1 ? 'task' : 'tasks'} selected
           </span>
-          <button
-            onClick={handleBulkDelete}
-            className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
-          >
-            Delete Selected
-          </button>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => dispatch(openBulkEdit({
+                type: 'status',
+                taskIds: Array.from(selectedTaskIds)
+              }))}
+              className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+            >
+              Change Status
+            </button>
+            <button
+              onClick={() => dispatch(openBulkEdit({
+                type: 'priority',
+                taskIds: Array.from(selectedTaskIds)
+              }))}
+              className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+            >
+              Change Priority
+            </button>
+            {/* Existing delete button */}
+            <button
+              onClick={handleBulkDelete}
+              className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
+            >
+              Delete Selected
+            </button>
+          </div>
         </div>
       )}
       

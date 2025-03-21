@@ -22,6 +22,7 @@ interface UiState {
   viewingTaskId: string | null;
   isDeleteConfirmOpen: boolean;
   deletingTaskId: string | null;
+  deletingTaskIds: string[],
   isBulkEditOpen: boolean;
   bulkEditType: 'status' | 'priority' | null;
   selectedTaskIds: string[];
@@ -46,6 +47,7 @@ const initialState: UiState = {
   viewingTaskId: null,
   isDeleteConfirmOpen: false,
   deletingTaskId: null,
+  deletingTaskIds: [],
   isBulkEditOpen: false,
   bulkEditType: null,
   selectedTaskIds: []
@@ -117,15 +119,23 @@ export const uiSlice = createSlice({
       state.viewingTaskId = null;
     },
 
-    openDeleteConfirm: (state, action: PayloadAction<string>) => {
+    openDeleteConfirm: (state, action: PayloadAction<string | string[]>) => {
       state.isDeleteConfirmOpen = true;
-      state.deletingTaskId = action.payload;
+      
+      if (Array.isArray(action.payload)) {
+        state.deletingTaskId = null;
+        state.deletingTaskIds = action.payload;
+      } else {
+        state.deletingTaskId = action.payload;
+        state.deletingTaskIds = [];
+      }
     },
     
     // Close delete confirmation modal
     closeDeleteConfirm: (state) => {
       state.isDeleteConfirmOpen = false;
       state.deletingTaskId = null;
+      state.deletingTaskIds = [];
     },
 
     // Open bulk edit modal

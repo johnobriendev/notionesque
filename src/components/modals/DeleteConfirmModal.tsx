@@ -1,24 +1,36 @@
-// src/components/modals/DeleteConfirmModal.tsx
+// // src/components/modals/DeleteConfirmModal.tsx
+
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { closeDeleteConfirm } from '../../features/ui/uiSlice';
-import { deleteTask } from '../../features/tasks/tasksSlice';
+import { deleteTask, deleteTasks } from '../../features/tasks/tasksSlice';
 
 const DeleteConfirmModal: React.FC = () => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector(state => state.ui.isDeleteConfirmOpen);
   const taskId = useAppSelector(state => state.ui.deletingTaskId);
+  const deletingTaskIds = useAppSelector(state => state.ui.deletingTaskIds);
   
-  if (!isOpen || !taskId) return null;
+  if (!isOpen) return null;
   
   const handleClose = () => {
     dispatch(closeDeleteConfirm());
   };
   
   const handleDelete = () => {
-    dispatch(deleteTask(taskId));
+    // If taskId is null and we have deletingTaskIds, it's a bulk delete
+    if (!taskId && deletingTaskIds.length > 0) {
+      dispatch(deleteTasks(deletingTaskIds));
+    } else if (taskId) {
+      dispatch(deleteTask(taskId));
+    }
+    
     handleClose();
   };
+
+  const message = taskId
+    ? "Are you sure you want to delete this task?"
+    : `Are you sure you want to delete ${deletingTaskIds.length} tasks?`;
   
   return (
     <div 
@@ -33,7 +45,7 @@ const DeleteConfirmModal: React.FC = () => {
         <h2 className="text-xl font-bold mb-4 text-gray-900">Confirm Deletion</h2>
         
         <p className="mb-6 text-gray-700">
-          Are you sure you want to delete this task? This action cannot be undone.
+          {message} This action cannot be undone.
         </p>
         
         <div className="flex justify-end space-x-3">

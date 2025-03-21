@@ -53,6 +53,12 @@ export interface TasksState {
     editingTaskId: string | null;
     isTaskDetailOpen: boolean;
     viewingTaskId: string | null;
+    isDeleteConfirmOpen: boolean;
+    deletingTaskId: string | null;
+    deletingTaskIds: string[]; 
+    isBulkEditOpen: boolean;
+    bulkEditType: 'status' | 'priority' | null;
+    selectedTaskIds: string[];
   }
   
   // Complete app state structure
